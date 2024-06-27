@@ -4,3 +4,4 @@ results/
 datasets/
 .DS_Store/
 model_saved/
+.DS_Store
