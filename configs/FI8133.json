@@ -1,0 +1,32 @@
+{
+  "Data_path": "./datasets/raw_my_data_4M.csv",
+  "CV_name": ["HYD3_FI8133"],
+  "MV_name": [
+    "HYD3_FIC8106",
+    "HYD3_FIC8102",
+    "HYD3_FIC8103",
+    "HYD3_FI8215",
+    "HYD3_FIC8110",
+    "HYD3_FI8114",
+    "HYD3_FI8140",
+    "HYD3_FIC8113",
+    "HYD3_FI8136",
+    "HYD3_PIC8107",
+    "HYD3_TI8123",
+    "HYD3_TIC8103A",
+    "HYD3_SISA8667C",
+    "HYD3_FISA8663",
+    "HYD3_FIC8108",
+    "HYD3_PIC8106"
+  ],
+  "Lags": [9, 0, 44, 30, 7, 57, 0, 1, 1, 3, 13, 7, 84, 47, 5, 0],
+  "Training_size": 40000,
+  "Test_size": 10000,
+  "evaluation_pred_step": [60],
+  "prediction_steps": [10, 20, 30, 40, 60, 120],
+  "EM_max_iter": 2000,
+  "output_Qn": true,
+  "verbose": true,
+  "blkMin": 0,
+  "blkMax": 120
+}
