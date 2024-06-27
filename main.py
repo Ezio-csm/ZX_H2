@@ -1,4 +1,6 @@
+import os
 import json
+import pickle
 
 import numpy as np
 import pandas as pd
@@ -28,14 +30,24 @@ data = data[['Time'] + config['MV_name'] + config['CV_name']]
 
 from SSM import SMMKalmanFilters
 
-model = SMMKalmanFilters(data, config=config)
-error, y_pred, y_true = model.forward()
-# print(np.sqrt(np.mean((y_true - y_pred) ** 2)))
+if __name__ == '__main__':
+    if config['ModelLoaded']:
+        with open('./model_saved/model.pkl', 'rb') as f:
+            model = pickle.load(f)
+    else:
+        model = SMMKalmanFilters(data, config=config)
+        error, y_pred, y_true = model.forward()
 
-results = model.Forecast()
-if not os.path.exists('./results'):
-    os.makedirs('./results')
-results.to_csv('./results/results.csv')
+    results = model.Forecast()
+    if not os.path.exists('./results'):
+        os.makedirs('./results')
+    results.to_csv('./results/results.csv')
+
+    if config['ModelSaved']:
+        if not os.path.exists('./model_saved'):
+            os.makedirs('./model_saved')
+        with open('./model_saved/model.pkl', 'wb') as f:
+            pickle.dump(model, f)
 
 
 # np.save('pred.npy', y_pred)

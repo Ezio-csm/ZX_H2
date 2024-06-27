@@ -28,5 +28,8 @@
   "output_Qn": true,
   "verbose": true,
   "blkMin": 0,
-  "blkMax": 120
+  "blkMax": 120,
+  "ModelLoaded": 0,
+  "ModelSaved": 0,
+  "ModelPath": "./model_saved/model.pkl"
 }

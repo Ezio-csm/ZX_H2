@@ -2,3 +2,5 @@ __pycache__/
 logs/
 results/
 datasets/
+.DS_Store/
+model_saved/

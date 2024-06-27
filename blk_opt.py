@@ -1,3 +1,4 @@
+import json
 import copy
 import numpy as np
 import pandas as pd
@@ -8,7 +9,8 @@ from plotly.subplots import make_subplots
 
 config_file_path = './configs/TIC1141.json'
 
-config = config_setter()
+with open(config_file_path, 'r') as file:
+    config = json.load(file)
 data_path = config['Data_path']
 train_size = config['Training_size'] + config['Test_size']
 data = pd.read_csv(data_path)
@@ -23,7 +25,6 @@ def config_setter(lags=None):
     return ret
 
 from SSM import SMMKalmanFilters
-from SimulatedAnnealing import SimulatedAnnealing
 from openbox import Optimizer, space as sp
 from openbox import ParallelOptimizer
 
