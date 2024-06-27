@@ -1,6 +1,7 @@
 import os
 import json
 import pickle
+import argparse
 
 import numpy as np
 import pandas as pd
@@ -11,7 +12,11 @@ from plotly.subplots import make_subplots
 
 # from pyinstrument import Profiler
 
-config_file_path = './configs/TIC1141.json'
+parser = argparse.ArgumentParser()
+parser.add_argument("config", type=str, help="config file")
+args = parser.parse_args()
+
+config_file_path = args.config
 
 with open(config_file_path, 'r') as file:
     config = json.load(file)
