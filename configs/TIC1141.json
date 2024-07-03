@@ -18,10 +18,10 @@
       "FIC1006",
       "FIC1109"
     ],
-    "Lags": [0, 5, 3, 3, 3, 2, 2, 0, 2, 17, 7, 17, 25, 0, 0],
+    "Lags": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     "Training_size": 80000,
-    "Test_size": 20000,
-    "evaluation_pred_step": [60],
+    "Test_size": -1,
+    "evaluation_pred_step": 60,
     "prediction_steps": [10, 20, 30, 40, 60, 120],
     "EM_max_iter": 2000,
     "output_Qn": true,
@@ -30,6 +30,7 @@
     "blkMax": 120,
     "ModelLoaded": 0,
     "ModelSaved": 0,
-    "ModelPath": "./model_saved/model.pkl"
+    "ModelLoadedPath": "./model_saved/model.pkl",
+    "ModelSaveedPath": "./model_saved/model.pkl"
   }
   

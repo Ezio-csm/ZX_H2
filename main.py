@@ -27,32 +27,47 @@ with open(config_file_path, 'r') as file:
 # ---------------------
 
 data_path = config['Data_path']
-train_size = config['Training_size'] + config['Test_size']
 data = pd.read_csv(data_path)
-data = data[:train_size]
+
+if config['Test_size'] == -1:
+    config['Test_size'] = data.shape[0] - config['Training_size']
+spilt_size = config['Training_size'] + config['Test_size']
+data = data[:spilt_size]
 data['Time'] = range(data.shape[0])
 data = data[['Time'] + config['MV_name'] + config['CV_name']]
+
+# if config['Test_size'] == -1:
+#     config['Test_size'] = data.shape[0] - config['Training_size']
+# train_data = data[:config['Training_size']]
+# test_data = data[config['Training_size']:config['Training_size'] + config['Test_size']]
+
+# def norm_data(data):
+#     data['Time'] = range(data.shape[0])
+#     data = data[['Time'] + config['MV_name'] + config['CV_name']]
+# norm_data(train_data)
+# norm_data(test_data)
 
 from SSM import SMMKalmanFilters
 
 if __name__ == '__main__':
+    model = SMMKalmanFilters(config=config)
     if config['ModelLoaded']:
-        with open('./model_saved/model.pkl', 'rb') as f:
-            model = pickle.load(f)
+        with open(config['ModelLoadedPath'], 'rb') as f:
+            model.model = pickle.load(f)
     else:
-        model = SMMKalmanFilters(data, config=config)
-        error, y_pred, y_true = model.forward()
+        rmse, y_pred, y_true = model.fit(data)
+        print(f"Evaluation RMSE on test {config['evaluation_pred_step']} steps: {rmse}")
 
-    results = model.Forecast()
+    results = model.forecast(data)
     if not os.path.exists('./results'):
         os.makedirs('./results')
     results.to_csv('./results/results.csv')
 
     if config['ModelSaved']:
-        if not os.path.exists('./model_saved'):
-            os.makedirs('./model_saved')
-        with open('./model_saved/model.pkl', 'wb') as f:
-            pickle.dump(model, f)
+        if not os.path.exists(os.path.dirname(config['ModelSavedPath'])):
+            os.makedirs(os.path.dirname(config['ModelSavedPath']))
+        with open(config['ModelSavedPath'], 'wb') as f:
+            pickle.dump(model.model, f)
 
 
 # np.save('pred.npy', y_pred)
