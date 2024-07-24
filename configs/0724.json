@@ -1,0 +1,30 @@
+{
+    "Data_path": "./datasets/data_0724.csv",
+    "CV_name": ["TIC1141"],
+    "MV_name": [
+      "J3FI193",
+      "J3FIC107.PV",
+      "J3FIC108.PV",
+      "J3FIC109.PV", 
+      "J3FIC110.PV",
+      "J3FIC111.PV",
+      "J3FIC112.PV",
+      "J3FIC113.PV",
+      "J3FICQ199.PV"
+    ],
+    "Lags": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "Training_size": 70368,
+    "Test_size": -1,
+    "evaluation_pred_step": 60,
+    "prediction_steps": [10, 20, 30, 40, 60, 120],
+    "EM_max_iter": 500,
+    "output_Qn": true,
+    "verbose": true,
+    "blkMin": 0,
+    "blkMax": 120,
+    "ModelLoaded": 0,
+    "ModelSaved": 0,
+    "ModelLoadedPath": "./model_saved/model.pkl",
+    "ModelSaveedPath": "./model_saved/model.pkl"
+  }
+  
