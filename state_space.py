@@ -1,6 +1,7 @@
 import numpy as np
 import math
 from multiprocessing import Pool
+from calc_utils import kalman_filter_proc
 
 USE_MULTIPROC = True
 PROC_NUM = 4
@@ -137,12 +138,13 @@ class StatespacewithShift:
         x[0, -1] = 0
 
         tmp = beta * ws + intercept
-        for t in range(1, num_steps):
-            xt1t = A @ x[t - 1] + tmp[t]
-            Pt1t = A @ P[t - 1] @ A.T + Q
-            K = Pt1t @ C.T @ np.linalg.inv(C @ Pt1t @ C.T + R)
-            x[t] = xt1t + K @ (y[t] - C @ xt1t)
-            P[t] = Pt1t - K @ C @ Pt1t
+        kalman_filter_proc(Q, C, A, R, P, x, y, tmp, num_steps)
+        # for t in range(1, num_steps):
+        #     xt1t = A @ x[t - 1] + tmp[t]
+        #     Pt1t = A @ P[t - 1] @ A.T + Q
+        #     K = Pt1t @ C.T @ np.linalg.inv(C @ Pt1t @ C.T + R)
+        #     x[t] = xt1t + K @ (y[t] - C @ xt1t)
+        #     P[t] = Pt1t - K @ C @ Pt1t
         return x, P
 
     def update(self, x, y, w, P, sample_T):

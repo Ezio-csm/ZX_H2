@@ -24,8 +24,8 @@ with open(config_file_path, 'r') as file:
     config = json.load(file)
 
 # ---------------------
-profiler = Profiler()
-profiler.start()
+# profiler = Profiler()
+# profiler.start()
 # ---------------------
 
 data_path = config['Data_path']
@@ -85,6 +85,6 @@ if __name__ == '__main__':
 
 
 # ---------------------
-profiler.stop()
-print(profiler.output_text(unicode=True, color=True))
+# profiler.stop()
+# print(profiler.output_text(unicode=True, color=True))
 # ---------------------
