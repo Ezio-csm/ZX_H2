@@ -14,7 +14,7 @@ from pyinstrument import Profiler
 
 parser = argparse.ArgumentParser()
 parser.add_argument("config", type=str, help="config file")
-parser.add_argument("output", type=str, help="output arg")
+parser.add_argument("--output", type=str, help="output arg", default=None)
 args = parser.parse_args()
 
 config_file_path = args.config
