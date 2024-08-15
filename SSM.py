@@ -3,7 +3,6 @@ import pandas as pd
 from state_space import StatespacewithShift
 from state_space import USE_MULTIPROC, PROC_NUM
 from multiprocessing import Pool
-# from CPD import std_cpd
 
 def Kalman_forecast_process(t, step, x_s, A, C, b, b_shape_0, w, intercept):
     for s in range(t - step, t):
@@ -99,7 +98,7 @@ class SMMKalmanFilters:
             w = w[max_lag:, :]
 
         return w, y
-    
+
     def Evaluation(self, data):
         step = self.config['evaluation_pred_step']
         steps = [step]
@@ -124,3 +123,49 @@ class SMMKalmanFilters:
         for cv in self.config['CV_name']:
             res = self.Kalman_forecast(data, steps, cv)
         return res
+
+    def predict(self, hist_data, future_w):
+        cv = self.config['CV_name']
+        MV_name = self.config['MV_name']
+        setting_lag = self.config['Lags']
+        max_lag = max(setting_lag)
+        num_var = len(MV_name)
+        y = np.array(hist_data[cv].values)
+        y = y[max_lag:]
+        w = np.zeros((len(hist_data), num_var))
+        for i, mv in enumerate(MV_name):
+            w[:, i] = hist_data[mv].shift(setting_lag[i]).values
+        w = w[max_lag:, :]
+        adjusted_future_w = np.zeros((future_w.shape[0], future_w.shape[1]))
+        for i, mv in enumerate(MV_name):
+            lag = setting_lag[i]
+            if lag > 0:
+                adjusted_future_w[lag:, i] = future_w[:-lag, i]
+                adjusted_future_w[:lag, i] = hist_data[mv].values[-lag:]
+            else:
+                adjusted_future_w[:, i] = future_w[:, i]
+        step = future_w.shape[0]
+        model = self.model
+        x, _ = model.kalman_filter(y, w)
+        model.x = x
+        C = np.zeros((1, model.b.shape[0] * 3 + 1))
+        intercept = np.zeros((model.b.shape[0] * 3 + 1,))
+        beta = np.zeros((model.b.shape[0] * 3 + 1,))
+        A = np.zeros((model.b.shape[0] * 3 + 1, model.b.shape[0] * 3 + 1))
+        for i in range(model.b.shape[0]):
+            A[3 * i + 2, 3 * i + 1] = 1
+            A[3 * i + 1, 3 * i] = 1
+            A[3 * i, 3 * i] = model.b[i][0]
+            A[3 * i, 3 * i + 1] = model.b[i][1]
+            C[0, 3 * i] = 1
+            intercept[3 * i] = model.c[i]
+            beta[3 * i] = model.b[i, 2]
+        A[-1, -1] = 1
+        C[0, -1] = 1
+        for s in range(step):
+            if s == 0:
+                x_s = model.x[-1]
+            x_s = A @ x_s + intercept
+            for (i, mv) in enumerate(MV_name):
+                x_s[3 * i] += model.b[i, 2] * adjusted_future_w[s, i]
+        return (C @ x_s)[0]
