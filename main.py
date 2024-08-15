@@ -33,6 +33,7 @@ data = pd.read_csv(data_path)
 
 if output_arg != None:
     config['CV_name'] = [output_arg]
+    config['ModelSavedPath'] = './model_saved/'+output_arg+'.pkl'
 
 if config['Test_size'] == -1:
     config['Test_size'] = data.shape[0] - config['Training_size']
@@ -72,6 +73,12 @@ if __name__ == '__main__':
         results.to_csv(f'./results/{output_arg}.csv')
     else:
         results.to_csv('./results/results.csv')
+
+    hist_data = data[:config['Training_size']]
+    future_w = data[config['Training_size']:config['Training_size']+config['Test_size']]
+    future_w = future_w[config['MV_name']].values
+    predict_result = model.predict(hist_data, future_w)
+    print(predict_result)
 
     if config['ModelSaved']:
         if not os.path.exists(os.path.dirname(config['ModelSavedPath'])):
