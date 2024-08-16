@@ -162,10 +162,12 @@ class SMMKalmanFilters:
             beta[3 * i] = model.b[i, 2]
         A[-1, -1] = 1
         C[0, -1] = 1
+        predict_cv=[]
         for s in range(step):
             if s == 0:
                 x_s = model.x[-1]
             x_s = A @ x_s + intercept
             for (i, mv) in enumerate(MV_name):
                 x_s[3 * i] += model.b[i, 2] * adjusted_future_w[s, i]
-        return (C @ x_s)[0]
+            predict_cv.append((C @ x_s)[0])
+        return predict_cv
