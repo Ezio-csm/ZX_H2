@@ -1,17 +1,13 @@
 {
-    "Data_path": "./datasets/data_0724.csv",
-    "CV_name": ["TIC1141"],
+    "Data_path": "./datasets/data_0724_1.csv",
+    "CV_name": ["J3TI107"],
     "MV_name": [
-      "J3FI193",
-      "J3FIC107.PV",
-      "J3FIC108.PV",
-      "J3FIC109.PV", 
-      "J3FIC110.PV",
-      "J3FIC111.PV",
-      "J3FIC112.PV",
-      "J3FIC113.PV",
-      "J3FICQ199.PV"
+      "J3FI193", "J3FIC107.PV", "J3FIC108.PV", "J3FIC109.PV", 
+      "J3FIC110.PV", "J3FIC111.PV", "J3FIC112.PV", "J3FIC113.PV",
+      "J3FICQ199.PV", "J3TIC101B.PV", "J3SUM11", "J3TIC002B.PV", 
+      "J3SUM12", "J3TI191", "J3FIC133.PV"
     ],
+    "lagSearch": false,
     "Lags": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     "Training_size": 70368,
     "Test_size": -1,
@@ -22,9 +18,14 @@
     "verbose": true,
     "blkMin": 0,
     "blkMax": 120,
-    "ModelLoaded": 0,
+    "paraSearch": true,
+    "paraMax": 0.001,
+    "omega": 0.00001,
+    "sigma": 0.0000000001,
+    "omegaMeanshift": 0,
+    "ModelLoaded": 1,
     "ModelSaved": 0,
-    "ModelLoadedPath": "./model_saved/model.pkl",
+    "ModelLoadedPath": "./model_saved/J3TI107.pkl",
     "ModelSaveedPath": "./model_saved/model.pkl"
   }
   
