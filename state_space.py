@@ -1,9 +1,9 @@
 import numpy as np
 import math
 from multiprocessing import Pool
-from calc_utils import kalman_filter_proc
+from calc_utils import kalman_filter_proc, kalman_filter_proc_c
 
-USE_MULTIPROC = True
+USE_MULTIPROC = False
 PROC_NUM = 4
 def rmse_process(t, eval_step, x_s, y, A, C, tmp):
     for s in range(t - eval_step, t):
@@ -11,13 +11,13 @@ def rmse_process(t, eval_step, x_s, y, A, C, tmp):
     return (y[t] - C @ x_s)[0] ** 2
 
 class StatespacewithShift:
-    def __init__(self, num_var, decay=1, output_Qn=False, verbose=False, eval_step=10):
+    def __init__(self, num_var, decay=1, output_Qn=False, verbose=False, eval_step=10, omega=1e-5, sigma=1e-20, omegaMeanshift=0):
         self.b = np.zeros((num_var, 3))
         self.c = np.zeros((num_var, 1))
         self.x = None
-        self.omega = np.full((num_var,), 1e-5)
-        self.sigma = 1e-20
-        self.omegaMeanshift = 0
+        self.omega = np.full((num_var,), omega)
+        self.sigma = sigma
+        self.omegaMeanshift = omegaMeanshift
         self.decay = decay
         self.variance = np.zeros((num_var, 4, 4))
         self.outputQn = output_Qn
@@ -33,7 +33,7 @@ class StatespacewithShift:
         for iter in range(max_iter):
             x, P = self.kalman_filter(y, w)
             self.x = x
-            if self.outputQn and cnt % 50 == 0:
+            if self.outputQn and cnt % 50 == 0 and False:
                 negative_logQ = self.negative_Q(x, P, y, w, sample_T)
                 estimated_RMSE = self.rmse(x, P, y, w, sample_T)
                 if self.verbose:
@@ -138,13 +138,7 @@ class StatespacewithShift:
         x[0, -1] = 0
 
         tmp = beta * ws + intercept
-        kalman_filter_proc(Q, C, A, R, P, x, y, tmp, num_steps)
-        # for t in range(1, num_steps):
-        #     xt1t = A @ x[t - 1] + tmp[t]
-        #     Pt1t = A @ P[t - 1] @ A.T + Q
-        #     K = Pt1t @ C.T @ np.linalg.inv(C @ Pt1t @ C.T + R)
-        #     x[t] = xt1t + K @ (y[t] - C @ xt1t)
-        #     P[t] = Pt1t - K @ C @ Pt1t
+        kalman_filter_proc_c(Q, C, A, R, P, x, y, tmp, num_steps)
         return x, P
 
     def update(self, x, y, w, P, sample_T):
