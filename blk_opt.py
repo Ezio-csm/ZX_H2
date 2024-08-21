@@ -27,11 +27,14 @@ data = data[:spilt_size]
 data['Time'] = range(data.shape[0])
 data = data[['Time'] + config['MV_name'] + config['CV_name']]
 
+islagSearch = config['lagSearch']
+isparaSearch = config['paraSearch']
+
 def config_setter(lags=None, paras=None):
     ret = copy.deepcopy(config)
-    if lags:
+    if lags and islagSearch:
         ret['Lags'] = lags
-    if paras:
+    if paras and isparaSearch:
         ret['omega'] = paras[0]
         ret['sigma'] = paras[1]
         ret['omegaMeanshift'] = paras[2]
@@ -49,18 +52,18 @@ lowv = config['blkMin']
 highv = config['blkMax']
 base_lags = config['Lags']
 numv = len(base_lags)
-if config['lagSearch']:
+if islagSearch:
     for i in range(numv):
         sp_lags.append(sp.Int(f'lag{i}', lowv, highv, default_value=base_lags[i]))
-if config['paraSearch']:
+if isparaSearch:
     sp_paras.append(sp.Real("omega", 0, config['paraMax'], default_value=config['omega']))
     sp_paras.append(sp.Real("sigma", 0, config['paraMax'], default_value=config['sigma']))
     sp_paras.append(sp.Real("omegaMeanshift", 0, config['paraMax'], default_value=config['omegaMeanshift']))
-space.add_variables(sp_lags)
+space.add_variables(sp_lags+sp_paras)
 
 def opt_wrapper(config):
-    lags = [config[f'lag{i}'] for i in range(numv)] if config['lagSearch'] else None
-    paras = [config['omega'], config['sigma'], config['omegaMeanshift']] if config['paraSearch'] else None
+    lags = [config[f'lag{i}'] for i in range(numv)] if islagSearch else None
+    paras = [config['omega'], config['sigma'], config['omegaMeanshift']] if isparaSearch else None
     model_config = config_setter(lags=lags, paras=paras)
     model = SMMKalmanFilters(config=model_config)
     rmse, _, _ = model.fit(data)
@@ -70,7 +73,7 @@ def opt_wrapper(config):
 if __name__ == '__main__':
     opt = ParallelOptimizer(opt_wrapper, space,
                     parallel_strategy='async',
-                    batch_size=2,
+                    batch_size=4,
                     batch_strategy='default',
                     num_objectives=1,
                     num_constraints=0,
