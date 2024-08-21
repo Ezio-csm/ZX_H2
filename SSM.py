@@ -21,7 +21,11 @@ class SMMKalmanFilters:
         self.model = StatespacewithShift(len(self.config['MV_name']), decay=1,
                                       output_Qn=self.config['output_Qn'],
                                       verbose=self.config['verbose'],
-                                      eval_step=self.config['evaluation_pred_step'])
+                                      eval_step=self.config['evaluation_pred_step'], 
+                                      omega = self.config['omega'], 
+                                      sigma = self.config['sigma'], 
+                                      omegaMeanshift = self.config['omegaMeanshift'],
+                                      )
 
     def Kalman_forecast(self, data, steps, cv):
         y = self.y
@@ -162,12 +166,12 @@ class SMMKalmanFilters:
             beta[3 * i] = model.b[i, 2]
         A[-1, -1] = 1
         C[0, -1] = 1
-        predict_cv=[]
+        predict_cv=np.array([0.0]*step)
         for s in range(step):
             if s == 0:
                 x_s = model.x[-1]
             x_s = A @ x_s + intercept
             for (i, mv) in enumerate(MV_name):
                 x_s[3 * i] += model.b[i, 2] * adjusted_future_w[s, i]
-            predict_cv.append((C @ x_s)[0])
+            predict_cv[s]=(C @ x_s)[0]
         return predict_cv
